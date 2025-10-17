@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+{% block javascript %}
+<script src="{{ url_for('static', filename='js/test.js') }}"></script>
+{% endblock %}
+
+{% block title %}
+    Test
+{% endblock %}
+
+{% block body %}
+     <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="d-flex justify-content-center">
+                    <h1 class="m-2">Test</h1>
+                </div>
+                <hr>
+                <form action="test" method="GET">
+                    <div class="d-flex justify-content-center">
+                            <div class="d-flex flex-column p-4 align-items-center">
+                                <!-- Image Section -->
+                                 <img id="image-thumbnail" 
+                                 class="img-thumbnail" 
+                                 style="width: 15rem; height: 20rem; object-fit: contain;">
+                                 </img>
+
+                                 <div id="image-choices" class="d-flex flex-wrap" style="width: 15rem;">
+                                 </div>
+
+                                 <em id="thumbnail-text" style="display: none;font-size: .8rem">
+                                    Pick an image to use as a product thumbnail.
+                                </em>
+
+                                 <div class="p-2" style="width: 16rem">
+                                    <input id="image-upload-input" class="form-control" type="file" name="image" 
+                                    multiple>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column p-4">
+                                <!-- Item Info Section  -->
+                                 <label for="name">Product Name:</label>
+                                 <input class="form-control" type="text" name="name">
+
+                                 <label for="price">Price:</label>
+                                 <input class="form-control" type="text" name="price">
+
+                                 <label for="stock">Stock:</label>
+                                 <input class="form-control" type="text" name="stock">
+
+                                 <label for="release">Release Date:</label>
+                                 <input class="form-control" type="date" name="release">
+
+                                 <label for="description">Description:</label>
+                                 <textarea class="form-control" name="description"></textarea>
+
+                                 <input class="m-3 btn btn-primary" type="submit" value="Add Product">
+                            </div>
+                    </div>
+                </form>
+                <hr>
+            </div>
+        </div>
+     </div>
+{% endblock %}
