@@ -3,6 +3,7 @@ async function readFiles(files) {
     // returns a result of a Promise.
     var promises = Array.from(files).map((file) => {
         // .readAsDataURL() is an async method. A Promise is used to wait for its results.
+        // Return reuslt of a Promise for each file in files.
         return new Promise((resolve, reject) => {
             reader = new FileReader();
             // .onload is a callback function that triggers when .readAsDataURL() successfully finishes.
@@ -14,14 +15,26 @@ async function readFiles(files) {
             reader.onerror = (error) => {
                 reject(error);
             }
-            reader.readAsDataURL(file);
+            
+            if (!file.type.startsWith('image/')) {
+                reject('Non-image file detected. Please ensure that all uploads are image files.');
+            } else {
+                reader.readAsDataURL(file);
+            }
         });
     });
 
     // results waits for all Promises in promises to resolve. It is then returned as an array of usable images.
     var results = await Promise.all(promises);
-    console.log(`results ${results.length}`);
     return results;
+}
+
+function setThumbnail({imageArray, index} = {}) {
+    if (Array.isArray(imageArray)) {
+        setThumbnail.array = imageArray;
+    }
+
+    $('#product-thumbnail').attr('src', setThumbnail.array[index]);
 }
 
 $("#image-upload-input").change(async (elementEvent) => {
@@ -29,30 +42,29 @@ $("#image-upload-input").change(async (elementEvent) => {
 
     if (files) {
         // read all files, place in imageArray
-        var imageArray = await readFiles(files);
+        try {
+            $('#image-choices').html('');
+            $('#thumbnail-error').html('');
+            $('#product-thumbnail').attr('src', '');
 
-        // append images in image array into #image-thumbnails element in page
-        $('#image-thumbnail').attr('src', imageArray[0]);
-        imageArray.forEach((image) => {
-            $('#image-choices').append(`<img class="m-2 img-thumbnail" src="${image}" 
-                style="width: 4rem; height: 4rem; object-fit: cover;">`);
-        });
-        $('#thumbnail-text').show();
+            var imageArray = await readFiles(files);
+
+            // append images in image array into #image-thumbnails element in page
+            setThumbnail({imageArray: imageArray, index: 0});
+            imageArray.forEach((image, index) => {
+                $('#image-choices').append(`<img id="${index}" class="m-2 img-thumbnail image-choice" src="${image}" 
+                    style="width: 4rem; height: 4rem; object-fit: cover;">`);
+            });
+            $('#thumbnail-text').show();
+        } catch (rejection) {
+            $('#thumbnail-error').append(`<em class="text-center"">${rejection}</em>`);
+            $('#thumbnail-text').hide();
+        }
     }
 });
 
-/*
-        for (var i = 0; i < input.files.length; i++) {
-            reader.onload = (readerEvent) => {
-                imageArray.push(readerEvent.target.result);
-                $('#image-preview').attr('src', imageArray[0]);
-
-                if (i == input.files.length) {
-                }
-            };
-
-            reader.readAsDataURL(input.files[i]);
-            reader = new FileReader();
-        }
-        console.log(imageArray.length);
-*/
+$("#image-choices").on('click', '.image-choice', function() {
+    var id = $(this).attr('id');
+    $("#thumbnail-index").val(id);
+    setThumbnail({index: id});
+});

@@ -1,65 +1,89 @@
 {% extends "layout.html" %}
 
 {% block javascript %}
-<script src="{{ url_for('static', filename='js/test.js') }}"></script>
+<script src="static/js/test.js"></script>
 {% endblock %}
 
-{% block title %}
-    Test
+{% block head %}
+    <title>Test</title>
+    <link rel="stylesheet" href="static/css/test.css">
 {% endblock %}
 
 {% block body %}
-     <div class="container">
-        <div class="row">
-            <div class="col">
-                <div class="d-flex justify-content-center">
-                    <h1 class="m-2">Test</h1>
-                </div>
-                <hr>
-                <form action="test" method="GET">
-                    <div class="d-flex justify-content-center">
-                            <div class="d-flex flex-column p-4 align-items-center">
-                                <!-- Image Section -->
-                                 <img id="image-thumbnail" 
-                                 class="img-thumbnail" 
-                                 style="width: 15rem; height: 20rem; object-fit: contain;">
-                                 </img>
-
-                                 <div id="image-choices" class="d-flex flex-wrap" style="width: 15rem;">
-                                 </div>
-
-                                 <em id="thumbnail-text" style="display: none;font-size: .8rem">
-                                    Pick an image to use as a product thumbnail.
-                                </em>
-
-                                 <div class="p-2" style="width: 16rem">
-                                    <input id="image-upload-input" class="form-control" type="file" name="image" 
-                                    multiple>
-                                </div>
-                            </div>
-                            <div class="d-flex flex-column p-4">
-                                <!-- Item Info Section  -->
-                                 <label for="name">Product Name:</label>
-                                 <input class="form-control" type="text" name="name">
-
-                                 <label for="price">Price:</label>
-                                 <input class="form-control" type="text" name="price">
-
-                                 <label for="stock">Stock:</label>
-                                 <input class="form-control" type="text" name="stock">
-
-                                 <label for="release">Release Date:</label>
-                                 <input class="form-control" type="date" name="release">
-
-                                 <label for="description">Description:</label>
-                                 <textarea class="form-control" name="description"></textarea>
-
-                                 <input class="m-3 btn btn-primary" type="submit" value="Add Product">
-                            </div>
-                    </div>
-                </form>
-                <hr>
+    <div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="d-flex justify-content-center">
+                <h1 class="p-2">Test</h1>
             </div>
+            <hr>
+            <!-- Product Editing -->
+            <form action="/test" method="POST" enctype="multipart/form-data">
+                <div class="d-flex justify-content-center flex-wrap">
+                    <div class="d-flex flex-column p-4 align-items-center">
+                        <!-- Image Section -->
+                        <div style="position: relative;">
+                            <img 
+                                id="product-thumbnail"
+                                class="img-thumbnail product-image product-image-large">
+                            <div 
+                                id="thumbnail-error" 
+                                class="d-flex justify-content-center align-items-center px-3 thumbnail-error-class 
+                                product-image-large">
+                            </div>
+                            <input id="thumbnail-index" type="hidden" name="thumbnail-index">
+                        </div>
+                        <div 
+                            id="image-choices" 
+                            class="d-flex flex-wrap image-choices-class">
+                        </div>
+                        <em id="thumbnail-text" class="thumbnail-text-class">
+                            Pick an image to use as a product thumbnail.
+                        </em>
+                        <div class="p-2" style="width: 16rem">
+                            <input id="image-upload-input" class="form-control" type="file" name="images" 
+                            multiple>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column p-4">
+                        <!-- Item Info Section  -->
+                        <label for="name">Product Name:</label>
+                        <input class="form-control" type="text" name="name">
+                        <label for="price">Price:</label>
+                        <input class="form-control" type="text" name="price">
+                        <label for="stock">Stock:</label>
+                        <input class="form-control" type="text" name="stock">
+                        <label for="release">Release Date:</label>
+                        <input class="form-control" type="date" name="release">
+                        <label for="description">Description:</label>
+                        <textarea class="form-control" name="description"></textarea>
+                        <label for="tags">Tags:</label>
+                        <textarea 
+                            class="form-control"
+                            name="tags"
+                            placeholder="Seperate with commas (i.e. 'ps5, game, action')."></textarea>
+                        <input class="mt-3 btn btn-primary" type="submit" value="Add Product">
+                    </div>
+                </div>
+            </form>
+            <hr>
+            <!-- Product Viewing -->
+            {% for product in products %}
+                <div class="d-flex p-4">
+                    <div class="d-flex flex-column align-items-center border rounded product-listing">
+                        <img 
+                            src="{{ url_for('thumbnail', productId=product.id) }}"
+                            class="img-thumbnail product-image product-image-small">
+                        <div class="d-flex fill-width px-2">
+                            <span>{{ product.name }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between fill-width px-2">
+                            <span>{{ product.price }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-     </div>
+    </div>
+    </div>
 {% endblock %}
