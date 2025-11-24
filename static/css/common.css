@@ -1,0 +1,24 @@
+/* Common */
+:root {
+    --default-text-color: #212529;
+}
+
+.fill-width {
+    width: 100%;
+}
+
+hr {
+    margin: 0;
+}
+
+.no-margin {
+    margin: 0;
+}
+
+.inactive-text-color {
+    color: lightgray;
+}
+
+.active-text-color {
+    color: var(--default-text-color);
+}

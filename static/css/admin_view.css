@@ -1,0 +1,57 @@
+/* Admin view specific */
+.choose-thumbnail-text-class {
+    display: none; 
+    font-size: .8em;
+}
+
+.thumbnail-error-class {
+    position: absolute; 
+    top: 0rem;
+}
+
+.image-choice {
+    cursor: pointer;
+
+}
+
+.image-choice:hover {
+    border: 1px solid darkgray;
+}
+
+.image-choice:active {
+    border: 1px solid gray;
+}
+
+.image-choices-class {
+    width: 15rem;
+}
+
+.text-btn-hover:hover {
+    cursor: pointer;
+    color: darkgray;
+}
+
+.text-btn {
+    cursor: pointer;
+}
+
+.text-btn:active {
+    color: gray;
+}
+
+.id-input {
+    width: 9rem;
+}
+
+#edit-form {
+    display: none;
+}
+
+.delete-btn {
+    font-size: .75rem;
+    position: absolute;
+}
+
+.search-bar {
+    width: 30rem;
+}

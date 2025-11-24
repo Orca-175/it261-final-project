@@ -1,0 +1,26 @@
+/* Product Listings */
+.product-listing {
+    width: 12rem;
+}
+
+.product-listing:hover {
+    cursor: pointer;
+    border: 1px solid darkgray !important;
+}
+
+.product-listing:active {
+    cursor: pointer;
+    border: 1px solid gray !important;
+}
+.listing-price {
+    font-size: 1.25rem;
+}
+
+.listing-anchor {
+    color: var(--default-font-color);
+    text-decoration: none;
+}
+
+.listing-other-metadata {
+    font-size: .8rem;
+}

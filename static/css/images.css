@@ -1,0 +1,13 @@
+/* Image related */
+.product-image {
+    object-fit: contain;
+}
+
+.product-image-large {
+    width: 15rem; 
+    height: 20rem;
+}
+
+.product-image-small {
+    width: 12rem; height: 16rem;
+}
