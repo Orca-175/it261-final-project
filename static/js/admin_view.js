@@ -73,33 +73,35 @@ $('#image-choices').on('click', '.image-choice', function() {
     setThumbnail({index: id});
 });
 
-$('#edit-form-button').on('click', () => {
+$('#edit-form-btn').on('click', () => {
+    $('#choose-thumbnail-text').hide();
     $('#image-choices').html('');
     $('#thumbnail-error-message').html('');
     $('#product-thumbnail').attr('src', '');
 
     $('#product-form').attr('action', '/admin_edit_product');
     $('#add-form').hide();
-    $('#add-form-button').removeClass('active-text-color').addClass('inactive-text-color text-btn-hover');
+    $('#add-form-btn').removeClass('active-text-color').addClass('inactive-text-color text-btn-hover');
 
     $('#edit-form').show();
-    $('#edit-form-button').removeClass('inactive-text-color text-btn-hover').addClass('active-text-color');
+    $('#edit-form-btn').removeClass('inactive-text-color text-btn-hover').addClass('active-text-color');
 });
 
-$('#add-form-button').on('click', () => {
+$('#add-form-btn').on('click', () => {
+    $('#choose-thumbnail-text').hide();
     $('#image-choices').html('');
     $('#thumbnail-error-message').html('');
     $('#product-thumbnail').attr('src', '');
 
     $('#product-form').attr('action', '/admin_add_product');
     $('#edit-form').hide();
-    $('#edit-form-button').removeClass('active-text-color').addClass('inactive-text-color text-btn-hover');
+    $('#edit-form-btn').removeClass('active-text-color').addClass('inactive-text-color text-btn-hover');
 
     $('#add-form').show();
-    $('#add-form-button').removeClass('inactive-text-color text-btn-hover').addClass('active-text-color');
+    $('#add-form-btn').removeClass('inactive-text-color text-btn-hover').addClass('active-text-color');
 });
 
-$('#get-product-button').on('click', () => {
+$('#get-product-btn').on('click', () => {
     $.get(`/admin_get_product_details/${$('#edit-form-id').val()}`, (data) => {
         var date = new Date(data['details']['release_date']);
         var imageArray = Array.from(data['images'].map((filepath) => {
@@ -123,7 +125,7 @@ $('#get-product-button').on('click', () => {
     });
 });
 
-$('.delete-product-button').on('click', function() {
+$('.delete-product-btn').on('click', function() {
     var message = `Are you sure you want to delete "${$(this).parent().find('#product-name').html().trim()}"?`
     if (confirm(message) == true) {
         $.post(
@@ -144,13 +146,32 @@ $('.delete-product-button').on('click', function() {
     }
 });
 
+$('#product-form').on('submit', function(event) {
+    event.preventDefault();
+    $.ajax({
+        url: $(this).attr('action'),
+        type: 'POST',
+        data: new FormData($(this)[0]),
+        processData: false,
+        contentType: false,
+        success: () => {
+            alert('Success!')
+            $('#search-btn').trigger('click');
+        },
+        error: (jqXHR) => {
+            alert(jqXHR.responseText);
+        }
+    });
+
+})
+
 $('#search-field').on('keydown', (event) => {
     if (event.key == 'Enter') {
-        $('#search-button').trigger('click');
+        $('#search-btn').trigger('click');
     }
 })
 
-$('#search-button').on('click', () => {
+$('#search-btn').on('click', () => {
     var searchQuery = $('#search-field').val();
     $.get(
         `/search_products/${searchQuery}`,
@@ -163,7 +184,7 @@ $('#search-button').on('click', () => {
                     <div class="d-flex flex-column border rounded product-listing mx-4">
                         <button 
                             id="${product['id']}" 
-                            class="delete-product-button delete-btn btn btn-danger m-2">
+                            class="delete-product-btn delete-btn btn btn-danger m-2">
                                 Delete
                         </button>
                         <a class="listing-anchor" href="/product/${product['id']}">

@@ -1,5 +1,7 @@
 from pymysql import connect, cursors
 
+from modules.exceptions import ProductNotFoundError
+
 class DatabaseConnection:
     def __init__(self, host, user, password, database, imageStorageHandler):
         self.db = connect(
@@ -13,25 +15,20 @@ class DatabaseConnection:
 
     def addProduct(self, product):
         with self.db.cursor() as cursor: 
-            # Insert product details.
             cursor.execute('INSERT INTO products (name, price, stock, release_date, description)' \
                 'VALUES (%s, %s, %s, %s, %s)', 
                 (product.name, product.price, product.stock, product.releaseDate, product.description)
             )
 
-            # Get id of inserted product.
             cursor.execute('SELECT id FROM products ORDER BY id DESC')
             id = cursor.fetchone()['id']
 
-            # Store images in id/. TODO: Add filetype verification. Only images are allowed!
             for image in product.images:
-                imagePath = self.imageStorageHandler.storeFIleAtId(id, image)
+                imagePath = self.imageStorageHandler.storeFileAtId(id, image)
                 cursor.execute('INSERT INTO images (product_id, image_path) VALUES(%s, %s)', (id, imagePath))
 
-            # Insert tags to tags table.
             for tag in product.tags:
-                cursor.execute('INSERT INTO tags (product_id, tag) VALUES(%s, %s)', (id, tag))
-
+                cursor.execute('INSERT INTO tags (product_id, tag) VALUES(%s, %s)', (id, tag.lower()))
 
     def getProductListings(self, searchQuery='%'): # Return product info relevant for listings.
         productsArray = []
@@ -53,7 +50,7 @@ class DatabaseConnection:
 
             return productsArray
 
-    def getProductDetails(self, productId): # Return product info of a single product.
+    def getProductDetails(self, productId): # Return all product info of a single product.
         productsDict = {
             'details': {},
             'images': [],
@@ -61,7 +58,8 @@ class DatabaseConnection:
         }
 
         with self.db.cursor() as cursor:
-            cursor.execute('SELECT * FROM products WHERE id = %s', (productId))
+            if cursor.execute('SELECT * FROM products WHERE id = %s', (productId)) < 1:
+                raise ProductNotFoundError(f'Product at ID {productId} was not found.')
 
             for product in cursor.fetchall():
                 productsDict['details'] = product
@@ -79,10 +77,13 @@ class DatabaseConnection:
 
     def editProduct(self, productId, product, thumbnailIndex):
         with self.db.cursor() as cursor:
-            cursor.execute('UPDATE products SET name = %s, price = %s, stock = %s, release_date = %s, ' \
+            rowsNumber = cursor.execute('UPDATE products SET name = %s, price = %s, stock = %s, release_date = %s, ' \
                 'description = %s WHERE id = %s', 
                 (product.name, product.price, product.stock, product.releaseDate, product.description, productId)
             )
+
+            if rowsNumber < 1:
+                raise ProductNotFoundError(f'Product at ID {productId} was not found.')
 
             imageList = []
             cursor.execute('SELECT image_path FROM images WHERE product_id = %s', (productId))
@@ -103,4 +104,5 @@ class DatabaseConnection:
     def deleteProduct(self, productId):
         with self.db.cursor() as cursor:
             if cursor.execute('DELETE FROM products WHERE id = %s', (productId)) < 1:
-                raise ValueError
+                raise ProductNotFoundError(f'Could not delete product "{productId}"')
+            self.imageStorageHandler.deleteDirectoryAtId(productId)

@@ -22,9 +22,9 @@
             <hr>
             <!-- Add/Edit buttons -->
             <div class="d-flex justify-content-center fill-width pt-4">
-                <h2 id="add-form-button" class="active-text-color text-btn text-btn-hover">Add</h2>
+                <h2 id="add-form-btn" class="active-text-color text-btn text-btn-hover">Add</h2>
                 <h2 class="px-2">|</h2> 
-                <h2 id="edit-form-button" class="inactive-text-color text-btn text-btn-hover">Edit</h2>
+                <h2 id="edit-form-btn" class="inactive-text-color text-btn text-btn-hover">Edit</h2>
             </div>
             <!-- Product Editing -->
             <form id="product-form" action="/admin_add_product" method="POST" enctype="multipart/form-data">
@@ -40,7 +40,7 @@
                                 class="d-flex justify-content-center align-items-center px-3 thumbnail-error-class 
                                 product-image-large">
                             </div>
-                            <input id="thumbnail-index" type="hidden" name="thumbnail-index">
+                            <input id="thumbnail-index" type="hidden" name="thumbnail-index" value="0">
                         </div>
                         <div 
                             id="image-choices" 
@@ -61,9 +61,9 @@
                             <label for="name">Product Name:</label>
                             <input class="form-control" type="text" name="name">
                             <label for="price">Price:</label>
-                            <input class="form-control" type="text" name="price">
+                            <input class="form-control" type="number" name="price">
                             <label for="stock">Stock:</label>
-                            <input class="form-control" type="text" name="stock">
+                            <input class="form-control" type="number" name="stock">
                             <label for="release">Release Date:</label>
                             <input class="form-control" type="date" name="release">
                             <label for="description">Description:</label>
@@ -83,14 +83,14 @@
                             <label for="id">Product ID:</label>
                             <div class="d-flex justify-content-between">
                                 <input id="edit-form-id" class="form-control id-input" type="text" name="edit-id">
-                                <input id="get-product-button" class="btn btn-primary" type="button" value="Get">
+                                <input id="get-product-btn" class="btn btn-primary" type="button" value="Get">
                             </div>
                             <label for="edit-name">Product Name:</label>
                             <input id="edit-form-name" class="form-control" type="text" name="edit-name">
                             <label for="edit-price">Price:</label>
-                            <input id="edit-form-price" class="form-control" type="text" name="edit-price">
+                            <input id="edit-form-price" class="form-control" type="number" name="edit-price">
                             <label for="edit-stock">Stock:</label>
-                            <input id="edit-form-stock" class="form-control" type="text" name="edit-stock">
+                            <input id="edit-form-stock" class="form-control" type="number" name="edit-stock">
                             <label for="edit-release">Release Date:</label>
                             <input id="edit-form-release" class="form-control" type="date" name="edit-release">
                             <label for="edit-description">Description:</label>
@@ -114,15 +114,15 @@
             <!-- Search -->
             <div class="d-flex justify-content-center fill-width m-3">
                 <input id="search-field" class="form-control search-bar me-2" type="text">
-                <input id="search-button" class="btn btn-primary" type="button" value="Search">
+                <input id="search-btn" class="btn btn-primary" type="btn" value="Search">
             </div>
             <!-- Listings -->
-            <div id="listings" class="d-flex p-4">
+            <div id="listings" class="d-flex flex-wrap p-4">
             {% for product in products %}
                 <div class="d-flex flex-column border rounded product-listing mx-4">
                     <button 
                         id="{{ product['id'] }}" 
-                        class="delete-product-button delete-btn btn btn-danger m-2">
+                        class="delete-product-btn delete-btn btn btn-danger m-2">
                             Delete
                     </button>
                     <a class="listing-anchor" href="/product/{{ product['id'] }}">

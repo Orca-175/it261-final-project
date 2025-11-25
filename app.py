@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from modules.database_connection import DatabaseConnection
+from modules.exceptions import ProductNotFoundError
 from modules.image_storage_handler import ImageStorageHandler
 from modules.models import Product
 
@@ -26,13 +27,14 @@ def adminView():
 
 @app.route('/admin_add_product', methods=['POST'])
 def adminAddProduct():
+    print(request.form)
     try:
         thumbnailIndex = int(request.form.get('thumbnail-index'))
 
         product = Product(
             name=request.form.get('name'),
-            price=request.form.get('price'),
-            stock=request.form.get('stock'),
+            price=int(request.form.get('price')),
+            stock=int(request.form.get('stock')),
             releaseDate=request.form.get('release'),
             description=request.form.get('description'),
             images=request.files.getlist('images'),
@@ -47,18 +49,21 @@ def adminAddProduct():
         connection.addProduct(product)
         return redirect(url_for('adminView')) 
 
-    except Exception as error:
-        return render_template('error.html', error=error)
+    except ValueError:
+        return 'Number fields must be filled with numeric values.', 400
+
+    except Exception:
+        return 'Something went wrong.', 500
 
 
 @app.route('/admin_edit_product', methods=['POST'])
 def adminEditProduct():
     try: 
-        productId = request.form.get('edit-id').strip()
+        productId = int(request.form.get('edit-id').strip()) 
         product = Product(
             name=request.form.get('edit-name'),
-            price=request.form.get('edit-price'),
-            stock=request.form.get('edit-stock'),
+            price=int(request.form.get('edit-price')),
+            stock=int(request.form.get('edit-stock')),
             releaseDate=request.form.get('edit-release'),
             description=request.form.get('edit-description'),
             images=None,
@@ -68,8 +73,15 @@ def adminEditProduct():
 
         connection.editProduct(productId, product, thumbnailIndex)
         return redirect(url_for('adminView'))
-    except Exception as error:
-        return render_template('error.html', error=error)
+    
+    except ValueError:
+        return 'Number fields must be filled with numeric values.', 400
+    
+    except ProductNotFoundError as error:
+        return error, 404
+
+    except Exception:
+        return 'Something went wrong.', 500
 
 
 @app.route('/admin_delete_product', methods=['POST'])
@@ -78,13 +90,18 @@ def adminDeleteProduct():
     try:
         connection.deleteProduct(int(productId))
         return 'Product deleted!'
-    except Exception:
-        return f'Product {productId} could not be deleted.', 400
+    except ProductNotFoundError as error:
+        return str(error), 404
+    except ValueError:
+        return f'"{productId}" is not a valid Product ID.', 400
 
 
 @app.route('/admin_get_product_details/<productId>')
 def getProductDetails(productId):
-    return connection.getProductDetails(productId)
+    try: 
+        return connection.getProductDetails(productId)
+    except ProductNotFoundError as error:
+        return str(error), 404
 
 
 @app.route('/search_products/', defaults={'searchQuery': ''})
@@ -95,4 +112,11 @@ def searchProduct(searchQuery):
 
 @app.route('/product/<productId>')
 def product(productId):
-    return render_template('product.html', product=connection.getProductDetails(productId))
+    try: 
+        return render_template('product.html', product=connection.getProductDetails(int(productId)))
+
+    except ProductNotFoundError as error:
+        return str(error), 404
+
+    except ValueError:
+        return f'"{productId}" is not a valid product id.'
