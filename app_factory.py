@@ -1,13 +1,14 @@
 from flask import Flask, session
+from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
-from models.user import User
 from modules.database_connection import DatabaseConnection
 from modules.image_storage_handler import ImageStorageHandler
 
 app = Flask(__name__)
 app.secret_key = '3550fbdb801fc78221ba1c15a4a3f096839c06424ce4bfd35d6ebc1ee7e41982'
 
-loginManager = LoginManager()
+loginManager = LoginManager(app)
+bcrypt = Bcrypt(app)    
 
 connection = DatabaseConnection(
     'localhost', 
@@ -16,6 +17,7 @@ connection = DatabaseConnection(
     'beta_glitch', 
     ImageStorageHandler('static/images')
 )
+
 
 loginManager.init_app(app)
 

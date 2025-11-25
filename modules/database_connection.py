@@ -1,5 +1,6 @@
+import app_factory
 from flask_bcrypt import check_password_hash
-from modules.exceptions import ProductNotFoundError, UserNotFoundError, WrongPasswordError
+from modules.exceptions import PasswordLengthError, ProductNotFoundError, UserNotFoundError, UsernameTakenError, WrongPasswordError
 from models.user import User
 from pymysql import connect, cursors
 
@@ -30,6 +31,34 @@ class DatabaseConnection:
                 return None
             admin = cursor.fetchone()
             return User(admin['id'], admin['adminname'], admin['approve'], 'admin')
+
+
+    def registerCustomer(self, username, password):
+        with self.db.cursor() as cursor:
+            if cursor.execute('SELECT * FROM customers WHERE username = %s', [username]) > 0:
+                raise UsernameTakenError(f'Username "{username}" already exists.')
+            if len(password) < 8:
+                raise PasswordLengthError('Password must be atleast 8 characters long.')
+
+            try: 
+                cursor.execute('INSERT INTO customers (username, password) '
+                    'VALUES (%s, %s)', [username, app_factory.bcrypt.generate_password_hash(password).decode()])
+            except Exception:
+                raise Exception
+
+
+    def registerAdmin(self, username, password):
+        with self.db.cursor() as cursor:
+            if cursor.execute('SELECT * FROM admins WHERE username = %s', [username]) > 0:
+                raise UsernameTakenError(f'Username "{username}" already exists.')
+            if len(password) < 8: 
+                raise PasswordLengthError('Password must be atleast 8 characters long.')
+            
+            try:
+                cursor.execute('INSERT INTO admins (username, password)'
+                    'VALUES (%s, %s)', [username, app_factory.bcrypt.generate_password_hash(password).decode()])
+            except Exception:
+                raise Exception
 
 
     def authenticateCustomer(self, username, password):
@@ -76,7 +105,7 @@ class DatabaseConnection:
         productsArray = []
         with self.db.cursor() as cursor:
             cursor.execute('SELECT products.id, products.name, products.price, products.stock, '
-                '(SELECT images.image_path FROM images WHERE images.product_id = products.id LIMIT 1) AS image ' \
+                '(SELECT images.image_path FROM images WHERE images.product_id = products.id LIMIT 1) AS image ' 
                 'FROM products WHERE products.name LIKE %s ORDER BY products.name',
                 (searchQuery)
             )

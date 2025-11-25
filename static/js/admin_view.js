@@ -43,9 +43,13 @@ function setImageChoices(image, index) {
     $('#choose-thumbnail-text').show();
 }
 
-[...$('[data-bs-toggle="tooltip"')].forEach((tooltip) => {
-    new bootstrap.Tooltip(tooltip);
-});
+function initializeTooltips() {
+    [...$('[data-bs-toggle="tooltip"')].forEach((tooltip) => {
+        new bootstrap.Tooltip(tooltip);
+    });
+}
+
+initializeTooltips();
 
 $('#image-upload-input').on('change', async (elementEvent) => {
     var files = elementEvent.target.files;
@@ -196,8 +200,10 @@ $('#search-btn').on('click', () => {
                                 src="/static/${product['image']}"
                                 class="img-thumbnail product-image product-image-small">
                             <div class="d-flex flex-column px-2 pb-2 fill-width">
-                                <span id="product-name" class="product-listing-name">
+                                <span data-bs-toggle="tooltip" data-bs-placement="top" title="${product['name']}">
+                                    <div id="product-name" class="product-listing-name">
                                     ${product['name']}
+                                    </div>
                                 </span>
                                 <div class="d-flex justify-content-between listing-other-metadata">
                                     <p>
@@ -209,18 +215,19 @@ $('#search-btn').on('click', () => {
                                 </div>
                                 <hr>
                                 <div class="d-flex justify-content-between align-items-end py-2">
-                                    <span class="listing-price">
+                                    <div class="listing-price">
                                         ₱ ${product['price']}
-                                    </span>
-                                    <span>
+                                    </div>
+                                    <div>
                                         Stock: ${product['stock']}
-                                    </span>
+                                    </div>
                                 </div>
                             </div>
                         </a>
                     </div>
                 `);
             });
+            initializeTooltips();
         }
     );
 });

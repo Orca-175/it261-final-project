@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'admin_layout.html' %}
 
 {% block head %}
     <title>Admin View</title>
@@ -16,10 +16,6 @@
     <div class="container">
     <div class="row">
         <div class="col">
-            <div class="d-flex justify-content-center">
-                <h1 class="p-2">Admin View</h1>
-            </div>
-            <hr>
             <!-- Add/Edit buttons -->
             <div class="d-flex justify-content-center fill-width pt-4">
                 <h2 id="add-form-btn" class="active-text-color text-btn text-btn-hover">Add</h2>
@@ -146,12 +142,12 @@
                             </div>
                             <hr>
                             <div class="d-flex justify-content-between align-items-end py-2">
-                                <span class="listing-price">
+                                <div class="listing-price">
                                     ₱ {{ product['price'] }}
-                                </span>
-                                <span>
+                                </div>
+                                <div>
                                     Stock: {{ product['stock'] }}
-                                </span>
+                                </div>
                             </div>
                         </div>
                     </a>
