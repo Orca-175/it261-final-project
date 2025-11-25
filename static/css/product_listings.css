@@ -12,6 +12,13 @@
     cursor: pointer;
     border: 1px solid gray !important;
 }
+
+.product-listing-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .listing-price {
     font-size: 1.25rem;
 }

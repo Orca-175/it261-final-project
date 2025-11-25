@@ -119,9 +119,9 @@
             <!-- Listings -->
             <div id="listings" class="d-flex flex-wrap p-4">
             {% for product in products %}
-                <div class="d-flex flex-column border rounded product-listing mx-4">
-                    <button 
-                        id="{{ product['id'] }}" 
+                <div class="d-flex flex-column border rounded product-listing mx-4 mb-3">
+                    <button
+                        id="{{ product['id'] }}"
                         class="delete-product-btn delete-btn btn btn-danger m-2">
                             Delete
                     </button>
@@ -130,8 +130,10 @@
                             src="{{ url_for('static', filename=product['image']) }}"
                             class="img-thumbnail product-image product-image-small">
                         <div class="d-flex flex-column px-2 pb-2 fill-width">
-                            <span id="product-name">
-                                {{ product['name'] }}
+                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ product['name'] }}">
+                                <div id="product-name" class="product-listing-name">
+                                    {{ product['name'] }}
+                                </div>
                             </span>
                             <div class="d-flex justify-content-between listing-other-metadata">
                                 <p>

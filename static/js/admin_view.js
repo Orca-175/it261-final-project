@@ -43,6 +43,10 @@ function setImageChoices(image, index) {
     $('#choose-thumbnail-text').show();
 }
 
+[...$('[data-bs-toggle="tooltip"')].forEach((tooltip) => {
+    new bootstrap.Tooltip(tooltip);
+});
+
 $('#image-upload-input').on('change', async (elementEvent) => {
     var files = elementEvent.target.files;
 
@@ -181,7 +185,7 @@ $('#search-btn').on('click', () => {
             $('#listings').html('');
             products.forEach((product) => {
                 $('#listings').append(`
-                    <div class="d-flex flex-column border rounded product-listing mx-4">
+                    <div class="d-flex flex-column border rounded product-listing mx-4 mb-3">
                         <button 
                             id="${product['id']}" 
                             class="delete-product-btn delete-btn btn btn-danger m-2">
@@ -192,7 +196,7 @@ $('#search-btn').on('click', () => {
                                 src="/static/${product['image']}"
                                 class="img-thumbnail product-image product-image-small">
                             <div class="d-flex flex-column px-2 pb-2 fill-width">
-                                <span id="product-name">
+                                <span id="product-name" class="product-listing-name">
                                     ${product['name']}
                                 </span>
                                 <div class="d-flex justify-content-between listing-other-metadata">
