@@ -1,6 +1,7 @@
+from flask_bcrypt import check_password_hash
+from modules.exceptions import ProductNotFoundError, UserNotFoundError, WrongPasswordError
+from models.user import User
 from pymysql import connect, cursors
-
-from modules.exceptions import ProductNotFoundError
 
 class DatabaseConnection:
     def __init__(self, host, user, password, database, imageStorageHandler):
@@ -12,6 +13,47 @@ class DatabaseConnection:
             cursorclass=cursors.DictCursor,
             autocommit=True)
         self.imageStorageHandler = imageStorageHandler
+
+
+    # For user_loader
+    def getCustomer(self, userId):
+        with self.db.cursor() as cursor:
+            if cursor.execute('SELECT * FROM customers WHERE id = %s', [userId]) < 1:
+                return None
+            customer = cursor.fetchone()
+            return User(customer['id'], customer['username'], customer['approve'], 'customer')
+
+
+    def getAdmin(self, adminId):
+        with self.db.cursor() as cursor:
+            if cursor.execute('SELECT * FROM admins WHERE id = %s', [adminId]) < 1:
+                return None
+            admin = cursor.fetchone()
+            return User(admin['id'], admin['adminname'], admin['approve'], 'admin')
+
+
+    def authenticateCustomer(self, username, password):
+        with self.db.cursor() as cursor:
+            rowsNumber = cursor.execute('SELECT * FROM customers WHERE username = %s', [username])
+            if rowsNumber < 1:
+                raise UserNotFoundError
+            customer = cursor.fetchone()
+
+            if not check_password_hash(customer['password'], password):
+                raise WrongPasswordError
+            return User(customer['id'], customer['username'], 'customer', customer['approve'])
+    
+    def authenticateAdmin(self, username, password):
+        with self.db.cursor() as cursor:
+            rowsNumber = cursor.execute('SELECT * FROM admins WHERE username = %s', [username])
+        if rowsNumber < 1:
+            raise UserNotFoundError
+        admin = cursor.fetchone()
+
+        if not check_password_hash(admin['password', password]):
+            raise WrongPasswordError
+        return User(admin['id'], admin['username'], 'admin', admin['approve'])
+
 
     def addProduct(self, product):
         with self.db.cursor() as cursor: 

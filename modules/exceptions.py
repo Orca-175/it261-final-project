@@ -1,2 +1,11 @@
 class ProductNotFoundError(Exception):
-    pass
+    def __init__(self, message='Product was not found.'):
+        super().__init__(message)
+
+class UserNotFoundError(Exception):
+    def __init__(self, message='Username was not found.'):
+        super().__init__(message)
+
+class WrongPasswordError(Exception):
+    def __init__(self, message='Wrong password. Please try again'):
+        super().__init__(message)

@@ -34,7 +34,8 @@
                         <div style="position: relative;">
                             <img 
                                 id="product-thumbnail"
-                                class="img-thumbnail product-image product-image-large">
+                                class="img-thumbnail product-image product-image-large"
+                                src="{{ url_for('static', filename='site-images/placeholder.svg') }}">
                             <div 
                                 id="thumbnail-error-message" 
                                 class="d-flex justify-content-center align-items-center px-3 thumbnail-error-class 
@@ -112,14 +113,14 @@
             <hr>
             <!-- Product Viewing -->
             <!-- Search -->
-            <div class="d-flex justify-content-center fill-width m-3">
-                <input id="search-field" class="form-control search-bar me-2" type="text">
-                <input id="search-btn" class="btn btn-primary" type="btn" value="Search">
+            <div class="d-flex flex-column flex-lg-row justify-content-center align-items-center">
+                <input id="search-field" class="form-control search-bar m-3" type="text">
+                <input id="search-btn" class="btn btn-primary" type="button" value="Search">
             </div>
             <!-- Listings -->
             <div id="listings" class="d-flex flex-wrap p-4">
             {% for product in products %}
-                <div class="d-flex flex-column border rounded product-listing mx-4 mb-3">
+                <div class="d-flex flex-column border rounded product-listing mx-2 mx-lg-4 mb-3">
                     <button
                         id="{{ product['id'] }}"
                         class="delete-product-btn delete-btn btn btn-danger m-2">

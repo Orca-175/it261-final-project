@@ -1,6 +1,13 @@
 /* Product Listings */
 .product-listing {
-    width: 12rem;
+    font-size: .8rem;
+    width: 12em;
+}
+
+@media (min-width: 768px) {
+    .product-listing {
+        font-size: 1rem;
+    }
 }
 
 .product-listing:hover {
@@ -20,7 +27,7 @@
 }
 
 .listing-price {
-    font-size: 1.25rem;
+    font-size: 1.25em;
 }
 
 .listing-anchor {
@@ -29,5 +36,5 @@
 }
 
 .listing-other-metadata {
-    font-size: .8rem;
+    font-size: .8em;
 }
