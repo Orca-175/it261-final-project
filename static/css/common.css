@@ -22,3 +22,7 @@ hr {
 .active-text-color {
     color: var(--default-text-color);
 }
+
+.brand-logo {
+    width: 5rem;
+}

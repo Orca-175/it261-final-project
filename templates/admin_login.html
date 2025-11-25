@@ -6,12 +6,17 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/authentication.css') }}">
 {% endblock %}
 
+{% block javascript %}
+    <script src="{{ url_for('static', filename='js/admin_authentication_forms.js') }}"></script>
+{% endblock %}
+
 {% block body %}
     <div class="container">
         <div class="row">
             <div class="column">
                 <div class="d-flex justify-content-center">
                     <form 
+                        id="login-form"
                         class="d-flex flex-column justify-content-center border p-4 mt-4" 
                         action="/admin_login" 
                         method="POST">
@@ -19,18 +24,31 @@
                         <div class="d-flex flex-column align-items-center form-fields-wrapper">
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="username-label">Username:</span>
-                                <input class="form-control" type="text" name="username" aria-describedby="username-label">
+                                <input 
+                                    class="form-control" 
+                                    type="text" 
+                                    name="username" 
+                                    aria-describedby="username-label"
+                                    required>
                             </div>
                             <div class="input-group mb-4">
                                 <div class="input-group">
                                     <span class="input-group-text" id="password-label">Password:</span>
                                     <input 
                                         class="form-control" 
-                                        type="text" 
+                                        type="password" 
                                         name="password"
-                                        aria-describedby="password-label">
+                                        aria-describedby="password-label"
+                                        required>
                                 </div>
                             </div>
+                            {% with messages = get_flashed_messages() %}
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        <p class="login-flash-message">{{ message }}</p>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
                             <a class="mb-4" href="/admin_registration">Don't have an account?</a>
                             <input class="btn btn-primary" type="submit" value="Login">
                         </div>

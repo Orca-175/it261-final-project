@@ -12,6 +12,32 @@
 <script src="{{ url_for('static', filename='js/admin_view.js') }}"></script>
 {% endblock %}
 
+{% block navbar %}
+    <button 
+        class="navbar-toggler" 
+        type="button" 
+        data-bs-toggle="collapse" 
+        data-bs-target="#beta-glitch-navbar" 
+        aria-controls="beta-glitch-navbar" 
+        aria-expanded="false" 
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="beta-glitch-navbar">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a class="nav-link link" aria-current="page" href="#">Products</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link link" aria-current="page" href="#">Users</a>
+            </li>
+        </ul>
+        <form action="/admin_logout">
+            <button id="admin-logout-btn" class="btn btn-danger">Logout</button>
+        </form>
+    </div>
+{% endblock %}
+
 {% block body %}
     <div class="container">
     <div class="row">
@@ -31,7 +57,7 @@
                             <img 
                                 id="product-thumbnail"
                                 class="img-thumbnail product-image product-image-large"
-                                src="{{ url_for('static', filename='site-images/placeholder.svg') }}">
+                                src="{{ url_for('static', filename='site-images/placeholder-image.png') }}">
                             <div 
                                 id="thumbnail-error-message" 
                                 class="d-flex justify-content-center align-items-center px-3 thumbnail-error-class 

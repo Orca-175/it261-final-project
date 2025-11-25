@@ -5,3 +5,7 @@
 .form-fields-wrapper {
     width: 30rem;
 }
+
+.login-flash-message {
+    color: red;
+}

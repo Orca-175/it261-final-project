@@ -1,11 +1,17 @@
-from flask_login import login_user
+from flask_login import login_required, login_user, current_user, logout_user
 from app_factory import app, connection
-from flask import render_template, request, redirect, url_for
+from flask import flash, jsonify, render_template, request, redirect, url_for
 from modules.exceptions import PasswordLengthError, ProductNotFoundError, UserNotFoundError, UsernameTakenError, WrongPasswordError
 from models.product import Product
 
+
 @app.route('/admin_view')
+@login_required
 def adminView():
+    if current_user.role != 'admin':
+        flash('Unauthorized role. Please login to an admin account to access this resource.', 'error')
+        return redirect(url_for('adminLogin'), 403)
+
     products = connection.getProductListings()
 
     if len(products) > 0:
@@ -15,7 +21,11 @@ def adminView():
 
 # Operations
 @app.route('/admin_add_product', methods=['POST'])
+@login_required
 def adminAddProduct():
+    if current_user.role != 'admin':
+        return 'Unauthorized role.', 401
+
     print(request.form)
     try:
         thumbnailIndex = int(request.form.get('thumbnail-index'))
@@ -46,7 +56,11 @@ def adminAddProduct():
 
 
 @app.route('/admin_edit_product', methods=['POST'])
+@login_required
 def adminEditProduct():
+    if current_user.role != 'admin':
+        return 'Unauthorized role.', 401
+
     try: 
         productId = int(request.form.get('edit-id').strip()) 
         product = Product(
@@ -74,7 +88,11 @@ def adminEditProduct():
 
 
 @app.route('/admin_delete_product', methods=['POST'])
+@login_required
 def adminDeleteProduct():
+    if current_user.role != 'admin':
+        return 'Unauthorized role.', 401
+
     productId = request.form.get('productId')
     try:
         connection.deleteProduct(int(productId))
@@ -86,7 +104,11 @@ def adminDeleteProduct():
 
 
 @app.route('/admin_get_product_details/<productId>')
+@login_required
 def getProductDetails(productId):
+    if current_user.role != 'admin':
+        return 'Unauthorized role.', 401
+    
     try: 
         return connection.getProductDetails(productId)
     except ProductNotFoundError as error:
@@ -99,14 +121,21 @@ def adminLogin():
     if request.method == 'GET':
         return render_template('admin_login.html')
     if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        if username == '' or password == '':
+            return 'Empty inputs detected. Please fill in all fields.', 400
+
         try: 
-            login_user(connection.authenticateAdmin(request.form.get('username'), request.form.get('password')))
+            login_user(connection.authenticateAdmin(username, password))
+            return jsonify({'redirect': url_for('adminView')})
         except UserNotFoundError as error:
             return str(error), 404
         except WrongPasswordError as error:
             return str(error), 400
-        except Exception:
-            return 'Something went wrong.', 500
+        except Exception as error:
+            return f'Something went wrong. {error}', 500
 
 
 @app.route('/admin_registration', methods=['GET', 'POST'])
@@ -114,14 +143,28 @@ def adminRegistration():
     if request.method == 'GET':
         return render_template('admin_registration.html')
     if request.method == 'POST':
-        if request.form.get('password') != request.form.get('confirm-password'):
+        username = request.form.get('username')
+        password = request.form.get('password')
+        confirmPassword = request.form.get('confirm-password')
+
+        if username == '' or password == '' or confirmPassword == '':
+            return 'Empty inputs detected. Please fill in all fields.', 400
+        if password != confirmPassword:
             return 'Confirm password does not match password.', 400
+
         try:
-            connection.registerAdmin(request.form.get('username'), request.form.get('password'))
-            return redirect()
+            connection.registerAdmin(username, password)
+            return jsonify({'redirect': url_for('adminLogin')}) 
         except UsernameTakenError as error:
             return str(error), 400
         except PasswordLengthError as error:
             return str(error), 400
         except Exception:
             return 'Something went wrong.', 500
+
+@app.route('/admin_logout')
+@login_required
+def adminLogout():
+    logout_user()
+    flash('You have been logged out!')
+    return redirect(url_for('adminLogin'))

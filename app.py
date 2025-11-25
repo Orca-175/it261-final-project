@@ -1,9 +1,13 @@
 from app_factory import app, connection
-from flask import Flask, render_template
+from flask import Flask, redirect, render_template, url_for
 from modules.exceptions import ProductNotFoundError
 
 # Routes
 import admin_routes
+
+@app.route('/')
+def index():
+    return redirect(url_for('adminLogin'))
 
 
 @app.route('/search_products/', defaults={'searchQuery': ''})

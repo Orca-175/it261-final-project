@@ -22,7 +22,7 @@ class DatabaseConnection:
             if cursor.execute('SELECT * FROM customers WHERE id = %s', [userId]) < 1:
                 return None
             customer = cursor.fetchone()
-            return User(customer['id'], customer['username'], customer['approve'], 'customer')
+            return User(customer['id'], customer['username'], customer['approved'], 'customer')
 
 
     def getAdmin(self, adminId):
@@ -30,7 +30,7 @@ class DatabaseConnection:
             if cursor.execute('SELECT * FROM admins WHERE id = %s', [adminId]) < 1:
                 return None
             admin = cursor.fetchone()
-            return User(admin['id'], admin['adminname'], admin['approve'], 'admin')
+            return User(admin['id'], admin['username'], admin['approved'], 'admin')
 
 
     def registerCustomer(self, username, password):
@@ -70,18 +70,18 @@ class DatabaseConnection:
 
             if not check_password_hash(customer['password'], password):
                 raise WrongPasswordError
-            return User(customer['id'], customer['username'], 'customer', customer['approve'])
+            return User(customer['id'], customer['username'], customer['approved'], 'customer')
     
     def authenticateAdmin(self, username, password):
         with self.db.cursor() as cursor:
             rowsNumber = cursor.execute('SELECT * FROM admins WHERE username = %s', [username])
-        if rowsNumber < 1:
-            raise UserNotFoundError
-        admin = cursor.fetchone()
+            if rowsNumber < 1:
+                raise UserNotFoundError
+            admin = cursor.fetchone()
 
-        if not check_password_hash(admin['password', password]):
-            raise WrongPasswordError
-        return User(admin['id'], admin['username'], 'admin', admin['approve'])
+            if not check_password_hash(admin['password'], password):
+                raise WrongPasswordError
+            return User(admin['id'], admin['username'], admin['approved'], 'admin')
 
 
     def addProduct(self, product):
