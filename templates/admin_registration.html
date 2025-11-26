@@ -1,8 +1,7 @@
-{% extends "admin_layout.html" %}
+{% extends 'admin_layout.html' %}
 
 {% block head %}
     <title>Admin Registration</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/authentication.css') }}">
 {% endblock %}
 
@@ -11,54 +10,48 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="row">
-            <div class="column">
-                <div class="d-flex justify-content-center form-wrapper">
-                    <form 
-                        id="registration-form"
-                        class="d-flex flex-column justify-content-center border p-4 mt-4" 
-                        action="/admin_registration" 
-                        method="POST">
-                        <h1 class="mb-4">Admin Registration</h1>
-                        <div class="d-flex flex-column align-items-center form-fields-wrapper">
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="username-label">Username:</span>
-                                <input 
-                                    class="form-control" 
-                                    type="text" 
-                                    name="username" 
-                                    aria-describedby="username-label"
-                                    required>
-                            </div>
-                            <div class="input-group mb-3">
-                                <div class="input-group">
-                                    <span class="input-group-text" id="password-label">Password:</span>
-                                    <input 
-                                        class="form-control" 
-                                        type="password" 
-                                        name="password"
-                                        aria-describedby="password-label"
-                                        required>
-                                </div>
-                            </div>
-                            <div class="input-group mb-3">
-                                <div class="input-group">
-                                    <span class="input-group-text" id="confirm-password-label">Confirm Password:</span>
-                                    <input 
-                                        class="form-control" 
-                                        type="password" 
-                                        name="confirm-password"
-                                        aria-describedby="confirm-password-label"
-                                        required>
-                                </div>
-                            </div>
-                            <a class="mb-4" href="/admin_login">Have an account?</a>
-                            <input class="btn btn-primary" type="submit" value="Register">
-                        </div>
-                    </form>
+    <div class="d-flex justify-content-center form-wrapper">
+        <form 
+            id="registration-form"
+            class="border p-4 mt-4" 
+            action="/admin_registration" 
+            method="POST">
+            <h1 class="mb-4">Admin Registration</h1>
+            <div class="d-flex flex-column align-items-center form-fields-wrapper">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="username-label">Username:</span>
+                    <input 
+                        class="form-control" 
+                        type="text" 
+                        name="username" 
+                        aria-describedby="username-label"
+                        required>
                 </div>
+                <div class="input-group mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text" id="password-label">Password:</span>
+                        <input 
+                            class="form-control" 
+                            type="password" 
+                            name="password"
+                            aria-describedby="password-label"
+                            required>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text" id="confirm-password-label">Confirm Password:</span>
+                        <input 
+                            class="form-control" 
+                            type="password" 
+                            name="confirm-password"
+                            aria-describedby="confirm-password-label"
+                            required>
+                    </div>
+                </div>
+                <a class="mb-4" href="/admin_login">Have an account?</a>
+                <input class="btn btn-primary" type="submit" value="Register">
             </div>
-        </div>
+        </form>
     </div>
 {% endblock %}

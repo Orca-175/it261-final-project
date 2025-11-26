@@ -1,6 +1,6 @@
 import app_factory
 from flask_bcrypt import check_password_hash
-from modules.exceptions import PasswordLengthError, ProductNotFoundError, UserNotFoundError, UsernameTakenError, WrongPasswordError
+from modules.exceptions import AccountAlreadyApprovedError, PasswordLengthError, ProductNotFoundError, UserNotFoundError, UsernameTakenError, WrongPasswordError
 from models.user import User
 from pymysql import connect, cursors
 
@@ -16,7 +16,6 @@ class DatabaseConnection:
         self.imageStorageHandler = imageStorageHandler
 
 
-    # For user_loader
     def getCustomer(self, userId):
         with self.db.cursor() as cursor:
             if cursor.execute('SELECT * FROM customers WHERE id = %s', [userId]) < 1:
@@ -31,6 +30,17 @@ class DatabaseConnection:
                 return None
             admin = cursor.fetchone()
             return User(admin['id'], admin['username'], admin['approved'], 'admin')
+
+
+    def getAdmins(self):
+        with self.db.cursor() as cursor:
+            cursor.execute('SELECT * FROM admins ORDER BY id DESC')
+
+            accounts = cursor.fetchall()
+            for account in accounts:
+                account['approved'] = str(bool(account['approved'])).capitalize()
+
+            return accounts
 
 
     def registerCustomer(self, username, password):
@@ -82,6 +92,13 @@ class DatabaseConnection:
             if not check_password_hash(admin['password'], password):
                 raise WrongPasswordError
             return User(admin['id'], admin['username'], admin['approved'], 'admin')
+
+
+    def approveAdmins(self, adminId):
+        with self.db.cursor() as cursor:
+            if cursor.execute('UPDATE admins SET approved = true WHERE id = %s', [adminId]) < 1:
+                raise AccountAlreadyApprovedError
+            
 
 
     def addProduct(self, product):

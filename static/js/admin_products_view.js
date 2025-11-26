@@ -85,7 +85,8 @@ $('#edit-form-btn').on('click', () => {
     $('#choose-thumbnail-text').hide();
     $('#image-choices').html('');
     $('#thumbnail-error-message').html('');
-    $('#product-thumbnail').attr('src', staticPrefix + 'site-images/placeholder.svg');
+    $('#product-thumbnail').attr('src', staticPrefix + 'site-images/placeholder-image.png');
+    $('#image-upload-input').val('');
 
     $('#product-form').attr('action', '/admin_edit_product');
     $('#add-form').hide();
@@ -99,7 +100,8 @@ $('#add-form-btn').on('click', () => {
     $('#choose-thumbnail-text').hide();
     $('#image-choices').html('');
     $('#thumbnail-error-message').html('');
-    $('#product-thumbnail').attr('src', staticPrefix + 'site-images/placeholder.svg');
+    $('#product-thumbnail').attr('src', staticPrefix + 'site-images/placeholder-image.png');
+    $('#image-upload-input').val('');
 
     $('#product-form').attr('action', '/admin_add_product');
     $('#edit-form').hide();

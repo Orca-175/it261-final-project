@@ -21,3 +21,7 @@ class WrongPasswordError(Exception):
 class PasswordLengthError(Exception):
     def __init__(self, message='Password is of an invalid length.'):
         super().__init__(message)
+
+class AccountAlreadyApprovedError(Exception):
+    def __init__(self, message='Account is already approved.'):
+        super().__init__(message)

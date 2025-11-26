@@ -1,0 +1,157 @@
+{% extends 'admin_layout.html' %}
+
+{% block head %}
+    <title>Products</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/product_listings.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/images.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_products_view.css') }}">
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ url_for('static', filename='js/admin_products_view.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    <!-- Add/Edit buttons -->
+    <div class="d-flex justify-content-center fill-width pt-4">
+        <h2 id="add-form-btn" class="active-text-color text-btn text-btn-hover">Add</h2>
+        <h2 class="px-2">|</h2> 
+        <h2 id="edit-form-btn" class="inactive-text-color text-btn text-btn-hover">Edit</h2>
+    </div>
+    <!-- Product Editing -->
+    <form id="product-form" action="/admin_add_product" method="POST" enctype="multipart/form-data">
+        <div class="d-flex justify-content-center flex-wrap">
+            <div class="d-flex flex-column p-4 align-items-center">
+                <!-- Image Section -->
+                <div style="position: relative;">
+                    <img 
+                        id="product-thumbnail"
+                        class="img-thumbnail product-image product-image-large"
+                        src="{{ url_for('static', filename='site-images/placeholder-image.png') }}">
+                    <div 
+                        id="thumbnail-error-message" 
+                        class="d-flex justify-content-center align-items-center px-3 thumbnail-error-class 
+                        product-image-large">
+                    </div>
+                    <input id="thumbnail-index" type="hidden" name="thumbnail-index" value="0">
+                </div>
+                <div 
+                    id="image-choices" 
+                    class="d-flex flex-wrap image-choices-class">
+                </div>
+                <em id="choose-thumbnail-text" class="choose-thumbnail-text-class">
+                    Pick an image to use as a product thumbnail.
+                </em>
+                <div class="p-2" style="width: 16rem">
+                    <input id="image-upload-input" class="form-control" type="file" name="images" 
+                    multiple>
+                </div>
+            </div>
+            <!-- Add form -->
+            <div id="add-form">
+                <div class="d-flex flex-column p-4">
+                    <!-- Item Info Section  -->
+                    <label for="name">Product Name:</label>
+                    <input class="form-control" type="text" name="name">
+                    <label for="price">Price:</label>
+                    <input class="form-control" type="number" name="price">
+                    <label for="stock">Stock:</label>
+                    <input class="form-control" type="number" name="stock">
+                    <label for="release">Release Date:</label>
+                    <input class="form-control" type="date" name="release">
+                    <label for="description">Description:</label>
+                    <textarea class="form-control" name="description"></textarea>
+                    <label for="tags">Tags:</label>
+                    <textarea
+                        class="form-control"
+                        name="tags"
+                        placeholder="Seperate with commas (e.g. 'ps5, game, action')."></textarea>
+                    <input class="mt-3 btn btn-primary" type="submit" value="Add Product">
+                </div>
+            </div>
+            <!-- Edit form -->
+            <div id="edit-form">
+                <div class="d-flex flex-column p-4">
+                    <!-- Item Info Section  -->
+                    <label for="id">Product ID:</label>
+                    <div class="d-flex justify-content-between">
+                        <input id="edit-form-id" class="form-control id-input" type="text" name="edit-id">
+                        <input id="get-product-btn" class="btn btn-primary" type="button" value="Get">
+                    </div>
+                    <label for="edit-name">Product Name:</label>
+                    <input id="edit-form-name" class="form-control" type="text" name="edit-name">
+                    <label for="edit-price">Price:</label>
+                    <input id="edit-form-price" class="form-control" type="number" name="edit-price">
+                    <label for="edit-stock">Stock:</label>
+                    <input id="edit-form-stock" class="form-control" type="number" name="edit-stock">
+                    <label for="edit-release">Release Date:</label>
+                    <input id="edit-form-release" class="form-control" type="date" name="edit-release">
+                    <label for="edit-description">Description:</label>
+                    <textarea 
+                        id="edit-form-description" 
+                        class="form-control" 
+                        name="edit-description"></textarea>
+                    <label for="edit-tags">Tags:</label>
+                    <textarea
+                        id="edit-form-tags"
+                        class="form-control"
+                        name="edit-tags"
+                        placeholder="Seperate with commas (e.g. 'ps5, game, action')."></textarea>
+                    <input class="mt-3 btn btn-primary" type="submit" value="Edit Product">
+                </div>
+            </div>
+        </div>
+    </form>
+    <hr>
+    <!-- Product Viewing -->
+    <!-- Search -->
+    <div class="d-flex flex-column flex-lg-row justify-content-center align-items-center">
+        <input id="search-field" class="form-control search-bar m-3" type="text">
+        <input id="search-btn" class="btn btn-primary" type="button" value="Search">
+    </div>
+    <!-- Listings -->
+    <div id="listings" class="d-flex flex-wrap p-4">
+    {% for product in products %}
+        <div class="d-flex flex-column border rounded product-listing mx-2 mx-lg-4 mb-3">
+            <button
+                id="{{ product['id'] }}"
+                class="delete-product-btn delete-btn btn btn-danger m-2">
+                    Delete
+            </button>
+            <a class="listing-anchor" href="/product/{{ product['id'] }}">
+                <img
+                    src="{{ url_for('static', filename=product['image']) }}"
+                    class="img-thumbnail product-image product-image-small">
+                <div class="d-flex flex-column px-2 pb-2 fill-width">
+                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ product['name'] }}">
+                        <div id="product-name" class="product-listing-name">
+                            {{ product['name'] }}
+                        </div>
+                    </span>
+                    <div class="d-flex flex-column flex-lg-row justify-content-between listing-other-metadata">
+                        <div>
+                            ID: {{ product['id'] }}
+                        </div>
+                        <div>
+                            {{ product['tags'][0] }} | {{ product['tags'][1] }}
+                        </div>
+                    </div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between align-items-end pb-2">
+                        <div class="listing-price">
+                            ₱ {{ product['price'] }}
+                        </div>
+                        <div>
+                            Stock: {{ product['stock'] }}
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    {% endfor %}
+    </div>
+
+    <script>
+        const staticPrefix = '{{ url_for("static", filename="") }}';
+    </script>
+{% endblock %}

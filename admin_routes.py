@@ -1,22 +1,32 @@
 from flask_login import login_required, login_user, current_user, logout_user
 from app_factory import app, connection
 from flask import flash, jsonify, render_template, request, redirect, url_for
-from modules.exceptions import PasswordLengthError, ProductNotFoundError, UserNotFoundError, UsernameTakenError, WrongPasswordError
+from modules.exceptions import AccountAlreadyApprovedError, PasswordLengthError, ProductNotFoundError, UserNotFoundError, UsernameTakenError, WrongPasswordError
 from models.product import Product
 
 
-@app.route('/admin_view')
+@app.route('/admin_products_view')
 @login_required
-def adminView():
+def adminProductsView():
     if current_user.role != 'admin':
-        flash('Unauthorized role. Please login to an admin account to access this resource.', 'error')
+        flash('Unauthorized role. Please login to an admin account to access this page.', 'error')
         return redirect(url_for('adminLogin'), 403)
 
     products = connection.getProductListings()
 
-    if len(products) > 0:
-        return render_template('admin_view.html', products=products)
-    return render_template('admin_view.html')
+    return render_template('admin_products_view.html', products=products)
+
+
+@app.route('/admin_users_view')
+@login_required
+def adminUsersView():
+    if current_user.role != 'admin':
+        flash('Unauthorized role. Please login to an admin account to access this page.', 'error')
+        return redirect(url_for('adminLogin'), 403)
+    
+    users = connection.getAdmins()
+
+    return render_template('admin_users_view.html', users=users)
 
 
 # Operations
@@ -108,11 +118,41 @@ def adminDeleteProduct():
 def getProductDetails(productId):
     if current_user.role != 'admin':
         return 'Unauthorized role.', 401
-    
+
     try: 
         return connection.getProductDetails(productId)
     except ProductNotFoundError as error:
         return str(error), 404
+
+
+@app.route('/approve_user', methods=['POST'])
+@login_required
+def approveUser():
+    if current_user.role != 'admin':
+        return 'Unauthorized role.', 401
+    
+    adminId = request.form.get('admin-id')
+    try:
+        connection.approveAdmins(int(adminId))
+        return 'Account has been approved!'
+    except ValueError:
+        return f'"{adminId}" is not a valid account id.', 400
+    except AccountAlreadyApprovedError:
+        username = connection.getAdmin(adminId).username
+        return f'"{username}" is already approved.', 400
+
+
+@app.route('/get_admins')
+@login_required
+def getAdmins():
+    if current_user.role != 'admin':
+        return 'Unauthorized role.', 401
+
+    try:
+        return connection.getAdmins()
+    except Exception:
+        return 'Something went wrong.', 500
+
 
 
 # Authentication
@@ -128,8 +168,9 @@ def adminLogin():
             return 'Empty inputs detected. Please fill in all fields.', 400
 
         try: 
-            login_user(connection.authenticateAdmin(username, password))
-            return jsonify({'redirect': url_for('adminView')})
+            if not login_user(connection.authenticateAdmin(username, password)):
+                return 'User has not been approved.', 401
+            return jsonify({'redirect': url_for('adminProductsView')})
         except UserNotFoundError as error:
             return str(error), 404
         except WrongPasswordError as error:
@@ -161,6 +202,7 @@ def adminRegistration():
             return str(error), 400
         except Exception:
             return 'Something went wrong.', 500
+
 
 @app.route('/admin_logout')
 @login_required

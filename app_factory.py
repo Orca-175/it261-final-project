@@ -8,6 +8,8 @@ app = Flask(__name__)
 app.secret_key = '3550fbdb801fc78221ba1c15a4a3f096839c06424ce4bfd35d6ebc1ee7e41982'
 
 loginManager = LoginManager(app)
+loginManager.login_view = 'adminLogin'
+loginManager.init_app(app)
 bcrypt = Bcrypt(app)    
 
 connection = DatabaseConnection(
@@ -19,7 +21,6 @@ connection = DatabaseConnection(
 )
 
 
-loginManager.init_app(app)
 
 @loginManager.user_loader
 def userLoader(userId):

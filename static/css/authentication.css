@@ -1,9 +1,5 @@
-.authentication-form {
-    width: 40rem;
-}
-
 .form-fields-wrapper {
-    width: 30rem;
+    max-width: 30rem;
 }
 
 .login-flash-message {
