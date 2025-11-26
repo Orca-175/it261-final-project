@@ -1,7 +1,7 @@
 from flask_login import login_required, login_user, current_user, logout_user
 from app_factory import app, connection
 from flask import flash, jsonify, render_template, request, redirect, url_for
-from modules.exceptions import AccountAlreadyApprovedError, PasswordLengthError, ProductNotFoundError, UserNotFoundError, UsernameTakenError, WrongPasswordError
+from modules.exceptions import AccountAlreadyApprovedError, EmptyFieldsError, PasswordLengthError, ProductNotFoundError, UserNotFoundError, UsernameTakenError, WrongPasswordError
 from models.product import Product
 
 
@@ -39,15 +39,26 @@ def adminAddProduct():
     print(request.form)
     try:
         thumbnailIndex = int(request.form.get('thumbnail-index'))
+        name = request.form.get('name').strip()
+        price = request.form.get('price')
+        stock = request.form.get('stock')
+        releaseDate = request.form.get('release').strip()
+        description = request.form.get('description').strip()
+        images = request.files.getlist('images')
+        tags = request.form.get('tags').strip()
+
+        if name == '' or price == '' or stock == '' or releaseDate == '' or description == '' or len(images) == 0 \
+            or tags == '':
+                raise EmptyFieldsError
 
         product = Product(
-            name=request.form.get('name'),
-            price=int(request.form.get('price')),
-            stock=int(request.form.get('stock')),
-            releaseDate=request.form.get('release'),
-            description=request.form.get('description'),
-            images=request.files.getlist('images'),
-            tags=request.form.get('tags').split(', ')
+            name=name,
+            price=int(price),
+            stock=int(stock),
+            releaseDate=releaseDate,
+            description=description,
+            images=images,
+            tags=tags.split(', ')
         )
 
         # Swap images[0] with images[thumbnail-index]
@@ -56,11 +67,12 @@ def adminAddProduct():
         product.images[thumbnailIndex] = imageAtZero 
 
         connection.addProduct(product)
-        return redirect(url_for('adminView')) 
+        return redirect(url_for('adminProductsView')) 
 
+    except EmptyFieldsError as error:
+        return str(error), 400
     except ValueError:
         return 'Number fields must be filled with numeric values.', 400
-
     except Exception:
         return 'Something went wrong.', 500
 
@@ -72,27 +84,38 @@ def adminEditProduct():
         return 'Unauthorized role.', 401
 
     try: 
-        productId = int(request.form.get('edit-id').strip()) 
-        product = Product(
-            name=request.form.get('edit-name'),
-            price=int(request.form.get('edit-price')),
-            stock=int(request.form.get('edit-stock')),
-            releaseDate=request.form.get('edit-release'),
-            description=request.form.get('edit-description'),
-            images=None,
-            tags=request.form.get('edit-tags').split(', '),
-        )
-        thumbnailIndex = int(request.form.get('thumbnail-index'))
+        productId = request.form.get('edit-id') 
+        name = request.form.get('edit-name').strip()
+        price = request.form.get('edit-price')
+        stock = request.form.get('edit-stock')
+        releaseDate = request.form.get('edit-release').strip()
+        description = request.form.get('edit-description').strip()
+        tags = request.form.get('edit-tags').split(', ')
 
-        connection.editProduct(productId, product, thumbnailIndex)
-        return redirect(url_for('adminView'))
+        if productId == '' or  name == '' or price == '' or stock == '' or releaseDate == '' or description == '' or \
+            tags == '':
+                raise EmptyFieldsError
+
+        product = Product(
+            name = name,
+            price=int(price),
+            stock=int(stock),
+            releaseDate=releaseDate,
+            description=description,
+            images=None,
+            tags=tags
+        )
+        thumbnailIndex = int(request.form.get('thumbnail-index').strip())
+
+        connection.editProduct(int(productId), product, thumbnailIndex)
+        return redirect(url_for('adminProductsView'))
     
+    except EmptyFieldsError as error:
+        return str(error), 400
     except ValueError:
         return 'Number fields must be filled with numeric values.', 400
-    
     except ProductNotFoundError as error:
-        return error, 404
-
+        return str(error), 404
     except Exception:
         return 'Something went wrong.', 500
 
@@ -103,7 +126,7 @@ def adminDeleteProduct():
     if current_user.role != 'admin':
         return 'Unauthorized role.', 401
 
-    productId = request.form.get('productId')
+    productId = request.form.get('productId').strip()
     try:
         connection.deleteProduct(int(productId))
         return 'Product deleted!'
@@ -131,7 +154,7 @@ def approveUser():
     if current_user.role != 'admin':
         return 'Unauthorized role.', 401
     
-    adminId = request.form.get('admin-id')
+    adminId = request.form.get('admin-id').strip()
     try:
         connection.approveAdmins(int(adminId))
         return 'Account has been approved!'
@@ -161,8 +184,8 @@ def adminLogin():
     if request.method == 'GET':
         return render_template('admin_login.html')
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
+        username = request.form.get('username').strip()
+        password = request.form.get('password').strip()
 
         if username == '' or password == '':
             return 'Empty inputs detected. Please fill in all fields.', 400
@@ -184,9 +207,9 @@ def adminRegistration():
     if request.method == 'GET':
         return render_template('admin_registration.html')
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        confirmPassword = request.form.get('confirm-password')
+        username = request.form.get('username').strip()
+        password = request.form.get('password').strip()
+        confirmPassword = request.form.get('confirm-password').strip()
 
         if username == '' or password == '' or confirmPassword == '':
             return 'Empty inputs detected. Please fill in all fields.', 400

@@ -116,7 +116,7 @@ class DatabaseConnection:
                 cursor.execute('INSERT INTO images (product_id, image_path) VALUES(%s, %s)', (id, imagePath))
 
             for tag in product.tags:
-                cursor.execute('INSERT INTO tags (product_id, tag) VALUES(%s, %s)', (id, tag.lower()))
+                cursor.execute('INSERT INTO tags (product_id, tag) VALUES(%s, %s)', (id, tag.strip().lower()))
 
     def getProductListings(self, searchQuery='%'): # Return product info relevant for listings.
         productsArray = []
@@ -165,13 +165,14 @@ class DatabaseConnection:
 
     def editProduct(self, productId, product, thumbnailIndex):
         with self.db.cursor() as cursor:
-            rowsNumber = cursor.execute('UPDATE products SET name = %s, price = %s, stock = %s, release_date = %s, ' \
+            rowsNumber = cursor.execute('SELECT * FROM products WHERE id = %s', [productId])
+            if rowsNumber < 1:
+                raise ProductNotFoundError(f'Product at ID {productId} was not found.')
+
+            cursor.execute('UPDATE products SET name = %s, price = %s, stock = %s, release_date = %s, ' \
                 'description = %s WHERE id = %s', 
                 (product.name, product.price, product.stock, product.releaseDate, product.description, productId)
             )
-
-            if rowsNumber < 1:
-                raise ProductNotFoundError(f'Product at ID {productId} was not found.')
 
             imageList = []
             cursor.execute('SELECT image_path FROM images WHERE product_id = %s', (productId))
@@ -186,7 +187,7 @@ class DatabaseConnection:
             
             cursor.execute('DELETE FROM tags WHERE product_id = %s', (productId))
             for tag in product.tags:
-                cursor.execute('INSERT INTO tags (product_id, tag) VALUES (%s, %s)', (productId, tag))
+                cursor.execute('INSERT INTO tags (product_id, tag) VALUES (%s, %s)', (productId, tag.strip().lower()))
             
 
     def deleteProduct(self, productId):

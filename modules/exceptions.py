@@ -25,3 +25,8 @@ class PasswordLengthError(Exception):
 class AccountAlreadyApprovedError(Exception):
     def __init__(self, message='Account is already approved.'):
         super().__init__(message)
+
+class EmptyFieldsError(Exception):
+    def __init__(self, message='Empty inputs detected. Please fill in all required fields.'):
+        super().__init__(message)
+

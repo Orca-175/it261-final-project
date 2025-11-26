@@ -87,6 +87,7 @@ $('#edit-form-btn').on('click', () => {
     $('#thumbnail-error-message').html('');
     $('#product-thumbnail').attr('src', staticPrefix + 'site-images/placeholder-image.png');
     $('#image-upload-input').val('');
+    $('#image-upload-input').hide();
 
     $('#product-form').attr('action', '/admin_edit_product');
     $('#add-form').hide();
@@ -102,6 +103,7 @@ $('#add-form-btn').on('click', () => {
     $('#thumbnail-error-message').html('');
     $('#product-thumbnail').attr('src', staticPrefix + 'site-images/placeholder-image.png');
     $('#image-upload-input').val('');
+    $('#image-upload-input').show();
 
     $('#product-form').attr('action', '/admin_add_product');
     $('#edit-form').hide();
@@ -135,7 +137,7 @@ $('#get-product-btn').on('click', () => {
     });
 });
 
-$('.delete-product-btn').on('click', function() {
+$(document).on('click', '.delete-product-btn', function() {
     var message = `Are you sure you want to delete "${$(this).parent().find('#product-name').html().trim()}"?`
     if (confirm(message) == true) {
         $.post(
@@ -165,7 +167,7 @@ $('#product-form').on('submit', function(event) {
         processData: false,
         contentType: false,
         success: () => {
-            alert('Success!')
+            alert('Operation successful!')
             $('#search-btn').trigger('click');
         },
         error: (jqXHR) => {
