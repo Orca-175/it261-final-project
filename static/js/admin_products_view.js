@@ -90,10 +90,10 @@ $('#edit-form-btn').on('click', () => {
     $('#image-upload-input').hide();
 
     $('#product-form').attr('action', '/admin_edit_product');
-    $('#add-form').hide();
+    $('#add-form').addClass('hidden');
     $('#add-form-btn').removeClass('active-text-color').addClass('inactive-text-color text-btn-hover');
 
-    $('#edit-form').show();
+    $('#edit-form').removeClass('hidden');
     $('#edit-form-btn').removeClass('inactive-text-color text-btn-hover').addClass('active-text-color');
 });
 
@@ -106,10 +106,10 @@ $('#add-form-btn').on('click', () => {
     $('#image-upload-input').show();
 
     $('#product-form').attr('action', '/admin_add_product');
-    $('#edit-form').hide();
+    $('#edit-form').addClass('hidden');
     $('#edit-form-btn').removeClass('active-text-color').addClass('inactive-text-color text-btn-hover');
 
-    $('#add-form').show();
+    $('#add-form').removeClass('hidden');
     $('#add-form-btn').removeClass('inactive-text-color text-btn-hover').addClass('active-text-color');
 });
 

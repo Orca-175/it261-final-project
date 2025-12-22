@@ -26,3 +26,20 @@ hr {
 .brand-logo {
     width: 5rem;
 }
+
+.text-btn-hover:hover {
+    cursor: pointer;
+    color: darkgray;
+}
+
+.text-btn {
+    cursor: pointer;
+}
+
+.text-btn:active {
+    color: gray;
+}
+
+.hidden {
+    display: none !important; /* Meant to overwrite Bootstrap classes that change display attribute. */
+}

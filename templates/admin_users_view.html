@@ -10,7 +10,15 @@
 
 
 {% block body %}
-    <div class="d-flex flex-column justify-content-center align-items-center fill-width">
+    <!-- Add/Edit buttons -->
+    <div class="d-flex justify-content-center fill-width pt-4">
+        <h2 id="admin-accounts-btn" class="active-text-color text-btn">Admins</h2>
+        <h2 class="px-2">|</h2> 
+        <h2 id="customer-accounts-btn" class="inactive-text-color text-btn text-btn-hover">Customers</h2>
+    </div>
+    <!-- Users tables -->
+    <!-- Admin Accounts -->
+    <div id="admin-accounts-table" class="d-flex flex-column justify-content-center align-items-center fill-width">
         <h2 class="m-4">Admin User Registrations</h2>
         <table class="table table-bordered table-hover">
             <thead>
@@ -21,7 +29,36 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody id="registrations-table-body">
+            <tbody id="admin-registrations-table-body">
+                {% for users in users %} 
+                    <tr class="registration-rows">
+                        <td>{{ users['id'] }}</td>
+                        <td>{{ users['username'] }}</td>
+                        <td>{{ users['approved'] }}</td>
+                        <td class="d-flex justify-content-center">
+                            <form class="admin-approval-form" action="/approve_user" method="POST">
+                                <input name="admin-id" type="hidden" value="{{ users['id'] }}">
+                                <input type="submit" class="btn btn-primary" value="Approve">
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Customer Accounts -->
+    <div id="customer-accounts-table" class="d-flex flex-column justify-content-center align-items-center fill-width hidden">
+        <h2 class="m-4">Customer User Registrations</h2>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Approval Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="customer-registrations-table-body">
                 {% for users in users %} 
                     <tr class="registration-rows">
                         <td>{{ users['id'] }}</td>

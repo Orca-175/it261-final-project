@@ -13,7 +13,7 @@ $('.admin-approval-form').on('submit', function(event) {
                 (response) => {
                     $('.registration-rows').remove();
                     response.forEach(user => {
-                        $('#registrations-table-body').append(`
+                        $('#admin-registrations-table-body').append(`
                             <tr class="registration-rows">
                                 <td>${user['id']}</td>
                                 <td>${user['username']}</td>
@@ -39,4 +39,20 @@ $('.admin-approval-form').on('submit', function(event) {
             alert(jqXHR.responseText);
         }
     );
+});
+
+$('#admin-accounts-btn').on('click', function() {
+    $('#customer-accounts-btn').removeClass('active-text-color').addClass('inactive-text-color text-btn-hover');
+    $(this).removeClass('inactive-text-color text-btn-hover').addClass('active-text-color');
+
+    $('#customer-accounts-table').addClass('hidden');
+    $('#admin-accounts-table').removeClass('hidden');
+});
+
+$('#customer-accounts-btn').on('click', function() {
+    $('#admin-accounts-btn').removeClass('active-text-color').addClass('inactive-text-color text-btn-hover');
+    $(this).removeClass('inactive-text-color text-btn-hover').addClass('active-text-color');
+
+    $('#admin-accounts-table').addClass('hidden');
+    $('#customer-accounts-table').removeClass('hidden');
 });
