@@ -37,8 +37,6 @@ class DatabaseConnection:
             cursor.execute('SELECT * FROM admins ORDER BY id DESC')
 
             accounts = cursor.fetchall()
-            for account in accounts:
-                account['approved'] = str(bool(account['approved'])).capitalize()
 
             return accounts
 

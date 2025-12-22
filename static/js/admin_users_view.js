@@ -13,15 +13,25 @@ $('.admin-approval-form').on('submit', function(event) {
                 (response) => {
                     $('.registration-rows').remove();
                     response.forEach(user => {
+                        var btnStyle = 'btn-primary';
+                        var disabled = '';
+                        if (user['approved']) {
+                            btnStyle = 'btn-secondary'
+                            var disabled = 'disabled';
+                        }
                         $('#admin-registrations-table-body').append(`
                             <tr class="registration-rows">
                                 <td>${user['id']}</td>
                                 <td>${user['username']}</td>
-                                <td>${user['approved']}</td>
                                 <td class="d-flex justify-content-center">
                                     <form class="admin-approval-form" action="/approve_user" method="POST">
                                         <input name="admin-id" type="hidden" value="${user['id']}">
-                                        <input type="submit" class="btn btn-primary" value="Approve">
+                                        <input 
+                                            type="submit" 
+                                            class="btn ${btnStyle}"
+                                            value="Approve"
+                                            ${disabled}
+                                            >
                                     </form>
                                 </td>
                             </tr>

@@ -2,6 +2,7 @@
 
 {% block head %}
     <title>Users</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_users_view.css') }}">
 {% endblock %}
 
 {% block javascript %}
@@ -18,15 +19,16 @@
     </div>
     <!-- Users tables -->
     <!-- Admin Accounts -->
-    <div id="admin-accounts-table" class="d-flex flex-column justify-content-center align-items-center fill-width">
+    <div 
+        id="admin-accounts-table" 
+        class="d-flex flex-column justify-content-center align-items-center fill-width">
         <h2 class="m-4">Admin User Registrations</h2>
-        <table class="table table-bordered table-hover">
+        <table class="table table-bordered table-hover accounts-table">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Username</th>
-                    <th>Approval Status</th>
-                    <th></th>
+                    <th>Approval</th>
                 </tr>
             </thead>
             <tbody id="admin-registrations-table-body">
@@ -34,11 +36,22 @@
                     <tr class="registration-rows">
                         <td>{{ users['id'] }}</td>
                         <td>{{ users['username'] }}</td>
-                        <td>{{ users['approved'] }}</td>
                         <td class="d-flex justify-content-center">
                             <form class="admin-approval-form" action="/approve_user" method="POST">
                                 <input name="admin-id" type="hidden" value="{{ users['id'] }}">
-                                <input type="submit" class="btn btn-primary" value="Approve">
+                                <input 
+                                    type="submit" 
+                                    value="Approve" 
+                                    class="btn
+                                    {% if users['approved'] %}
+                                        btn-secondary
+                                    {% else %} 
+                                        btn-primary
+                                    {% endif %}
+                                    " 
+                                    {% if users['approved'] %} 
+                                        disabled 
+                                    {% endif %}>
                             </form>
                         </td>
                     </tr>
