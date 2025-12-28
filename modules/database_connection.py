@@ -1,3 +1,4 @@
+import math
 import app_factory
 from flask_bcrypt import check_password_hash
 from modules.exceptions import AccountAlreadyApprovedError, PasswordLengthError, ProductNotFoundError, UserNotFoundError, UsernameTakenError, WrongPasswordError
@@ -79,7 +80,8 @@ class DatabaseConnection:
             if not check_password_hash(customer['password'], password):
                 raise WrongPasswordError
             return User(customer['id'], customer['username'], customer['approved'], 'customer')
-    
+
+
     def authenticateAdmin(self, username, password):
         with self.db.cursor() as cursor:
             rowsNumber = cursor.execute('SELECT * FROM admins WHERE username = %s', [username])
@@ -116,13 +118,14 @@ class DatabaseConnection:
             for tag in product.tags:
                 cursor.execute('INSERT INTO tags (product_id, tag) VALUES(%s, %s)', (id, tag.strip().lower()))
 
-    def getProductListings(self, searchQuery='%'): # Return product info relevant for listings.
+
+    def getProductListings(self, offset, searchQuery='%'): # Return product info relevant for listings.
         productsArray = []
         with self.db.cursor() as cursor:
             cursor.execute('SELECT products.id, products.name, products.price, products.stock, '
                 '(SELECT images.image_path FROM images WHERE images.product_id = products.id LIMIT 1) AS image ' 
-                'FROM products WHERE products.name LIKE %s ORDER BY products.name',
-                (searchQuery)
+                'FROM products WHERE products.name LIKE %s ORDER BY products.name LIMIT 10 OFFSET %s',
+                (searchQuery, offset)
             )
 
             for product in cursor.fetchall():
@@ -133,8 +136,16 @@ class DatabaseConnection:
                 product['tags'] = tags
 
                 productsArray.append(product)
+            
+            cursor.execute('SELECT COUNT(*) AS count FROM (SELECT products.id, products.name, products.price, products.stock, '
+                '(SELECT images.image_path FROM images WHERE images.product_id = products.id LIMIT 1) AS image ' 
+                'FROM products WHERE products.name LIKE %s ORDER BY products.name) AS results',
+                (searchQuery)
+            )
 
-            return productsArray
+            
+            return productsArray, math.ceil(cursor.fetchone()['count'] / 10)
+
 
     def getProductDetails(self, productId): # Return all product info of a single product.
         productsDict = {
@@ -160,6 +171,7 @@ class DatabaseConnection:
                 productsDict['tags'].append(product['tag'].upper())
 
         return productsDict
+
 
     def editProduct(self, productId, product, thumbnailIndex):
         with self.db.cursor() as cursor:
@@ -187,6 +199,7 @@ class DatabaseConnection:
             for tag in product.tags:
                 cursor.execute('INSERT INTO tags (product_id, tag) VALUES (%s, %s)', (productId, tag.strip().lower()))
             
+
 
     def deleteProduct(self, productId):
         with self.db.cursor() as cursor:

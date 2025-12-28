@@ -12,9 +12,11 @@ def adminProductsView():
         flash('Unauthorized role. Please login to an admin account to access this page.', 'error')
         return redirect(url_for('adminLogin'), 403)
 
-    products = connection.getProductListings()
+    pageNumber = request.args.get('pageNumber', 1, type=int)
+    products, totalPages = connection.getProductListings(10 * (pageNumber - 1))
+    print(pageNumber)
 
-    return render_template('admin_products_view.html', products=products)
+    return render_template('admin_products_view.html', products=products, pageNumber=pageNumber, totalPages=totalPages)
 
 
 @app.route('/admin_users_view')
