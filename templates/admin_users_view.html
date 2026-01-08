@@ -57,6 +57,7 @@
                     </tr>
                 {% endfor %}
             </tbody>
+    </div>
         </table>
     </div>
     <!-- Customer Accounts -->
@@ -87,5 +88,14 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+    <div class="d-flex justify-content-center">
+        {% if pageNumber > 1 %}
+            <a class="btn btn-primary" href="{{ url_for('adminUsersView', pageNumber = pageNumber - 1)}}">Back</a>
+        {% endif %}
+        <span class="px-3">Page {{ pageNumber }} of {{ totalPages }}</span>
+        {% if pageNumber < totalPages %}
+            <a class="btn btn-primary" href="{{ url_for('adminUsersView', pageNumber = (pageNumber + 1))}}">Next</a>
+        {% endif %}
     </div>
 {% endblock %}

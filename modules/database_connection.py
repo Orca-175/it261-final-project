@@ -33,13 +33,16 @@ class DatabaseConnection:
             return User(admin['id'], admin['username'], admin['approved'], 'admin')
 
 
-    def getAdmins(self):
+    def getAdmins(self, offset):
         with self.db.cursor() as cursor:
-            cursor.execute('SELECT * FROM admins ORDER BY id DESC')
+            cursor.execute('SELECT * FROM admins ORDER BY id DESC LIMIT 10 OFFSET %s', (offset))
 
             accounts = cursor.fetchall()
 
-            return accounts
+            cursor.execute('SELECT * FROM admins')
+            cursor.fetchall()
+
+            return accounts, math.ceil(cursor.rowcount / 10)
 
 
     def registerCustomer(self, username, password):
@@ -124,7 +127,7 @@ class DatabaseConnection:
         with self.db.cursor() as cursor:
             cursor.execute('SELECT products.id, products.name, products.price, products.stock, '
                 '(SELECT images.image_path FROM images WHERE images.product_id = products.id LIMIT 1) AS image ' 
-                'FROM products WHERE products.name LIKE %s ORDER BY products.name LIMIT 10 OFFSET %s',
+                'FROM products WHERE products.name LIKE %s ORDER BY products.name LIMIT 20 OFFSET %s',
                 (searchQuery, offset)
             )
 
@@ -144,7 +147,7 @@ class DatabaseConnection:
             )
 
             
-            return productsArray, math.ceil(cursor.fetchone()['count'] / 10)
+            return productsArray, math.ceil(cursor.fetchone()['count'] / 20)
 
 
     def getProductDetails(self, productId): # Return all product info of a single product.

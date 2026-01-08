@@ -13,8 +13,7 @@ def adminProductsView():
         return redirect(url_for('adminLogin'), 403)
 
     pageNumber = request.args.get('pageNumber', 1, type=int)
-    products, totalPages = connection.getProductListings(10 * (pageNumber - 1))
-    print(pageNumber)
+    products, totalPages = connection.getProductListings(20 * (pageNumber - 1))
 
     return render_template('admin_products_view.html', products=products, pageNumber=pageNumber, totalPages=totalPages)
 
@@ -26,9 +25,10 @@ def adminUsersView():
         flash('Unauthorized role. Please login to an admin account to access this page.', 'error')
         return redirect(url_for('adminLogin'), 403)
     
-    users = connection.getAdmins()
+    pageNumber = request.args.get('pageNumber', 1, type=int)
+    users, totalPages = connection.getAdmins(10 * (pageNumber - 1))
 
-    return render_template('admin_users_view.html', users=users)
+    return render_template('admin_users_view.html', users=users, pageNumber=pageNumber, totalPages=totalPages)
 
 
 # Operations
